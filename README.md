@@ -23,4 +23,4 @@ set path=%path%;путь_к_каталогу_bin_компилятора
 1. autoamates.h, autoamates.c - сама автоматная модель управления пневмоцилиндрами
 2. G_K_A.prt - схема для сборки модели
 3. K_A.prt - схема для тестирования модели
-4. Diary.md - содержит в себе детальное описание структуры модели
+4. [Diary.md](https://github.com/sunnyEmty/automate_control_system/blob/main/Diary.md) - содержит в себе детальное описание структуры модели
