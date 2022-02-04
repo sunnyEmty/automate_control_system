@@ -8,8 +8,7 @@ static int G_T[19];
 static int G_D[19];
 int ALL_GOOD = 1;
 
-bool set_switch_times(int a) {
-    if (!a) return 0;
+bool set_switch_times() {
     const int d = 1;
     G_T[0] = -1;
     G_D[0] = -1;
@@ -30,6 +29,7 @@ bool set_switch_times(int a) {
 }
 
 void init(struct Automate *engine, int size) {
+
     for (int i = 0; i < size; i++) {
         engine[i].state = STATE_0;
         engine[i].ticks = time(NULL);

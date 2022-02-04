@@ -39,22 +39,44 @@ enum States {
 };
 
 
-// В
+// Струкура с параметрами автомата
 struct Automate {
-    int state;
-    bool at_bottom;
-    bool at_top;
-    bool output;
-    long int ticks;
-    bool can_change;
+    int state;              // Номер текущего состояния
+    bool at_bottom;         // Равен 1, если пневмоцилиндр находится в крайнем нижнем положении
+    bool at_top;            // Равен 1, если пневмоцилиндр находится в крайнем верхнем положении
+    bool output;            // Выходной управляющий сигнал
+    long int ticks;         // Текущее время в секундах
+    bool can_change;        // Если равен 1, то у автомата есть возможность
 };
-bool set_switch_times(int a);
+
+// Инициализация массивов с временными отрезками
+bool set_switch_times();
+
+// Инициализация массива автоматов engine размера size
 void init(struct Automate* engine, int size);
+
+// Обновление состояний пневмоцилиндров
 bool synchro(struct Automate* structs, bool commands[8][18], int h);
+
+// Вызывается для каждого автомата - engine (не массив) в функции synchro.
+// На вход также получает массив команд (1 - вверх, 0 - вниз)
+// Определяет последовательность смены состояний при
+// работе в штатном режиме
 bool update_state(struct Automate* engine, bool* commands);
+
+// Осуществляет задержку цилиндра engine в заданном положении
+// int state, bool com нужны в control_chang_st
 bool send_com(struct Automate* engine, int state, bool com);
+
+// Выполняет обработку возникших исключений в автоматах structs (количество которых равно size)
+// start_st - предыдущее состояние автомата (до смены), commands - массив команд
 bool resolve_ex(struct Automate* structs, const int size, const int start_st, bool commands[8][18]);
+
+// Управляет подачей выходного сигнала и сменой состояний автомата
 bool control_chang_st(struct Automate* engine, enum States start_state, bool com);
+
+// Останавливает автоматы (процесс смены состояния) и переводит его в ошибочное
+// Состояение если исключение обработать не удалось
 void set_err(struct Automate* structs, int size);
 
 
