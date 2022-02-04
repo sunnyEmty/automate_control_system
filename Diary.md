@@ -180,68 +180,220 @@
 Реализуем данный автомат. Функция init выполняет инициализацию автомата (листинг 3.1). Она принимает на вход массив структур, каждый каждая структура соответствует своему пневмоцилиндру и хранит входные, выходные значения и состояние.
 
 Листинг 3.1 – Инициализация автомата
-
-| void init(struct Automate\* engine, int size) {for (int i = 0; i \&lt; size; i++) {engine[i].state = STATE\_0;engine[i].ticks = time(NULL);engine[i].output = 0;engine[i].at\_bottom = 0;engine[i].at\_top = 0;engine[i].can\_change = 1;}} |
-| --- |
+```
+void init(struct Automate *engine, int size) {
+    for (int i = 0; i < size; i++) {
+        engine[i].state = STATE_0;
+        engine[i].ticks = time(NULL);
+        engine[i].output = 0;
+        engine[i].at_bottom = 0;
+        engine[i].at_top = 0;
+        engine[i].can_change = 1;
+    }
+}
+```
 
 Работу автомата можно описать следующими функциями. Функция synchro выполняет работу с несколькими пневмоцилиндрами сразу, обеспечивая подачу команд на пневмоцилиндры и возможность обнаружения исключительных ситуации (листинг 3.2).
 
 Листинг 3.2 – Подача сигнала
+```
+bool synchro(struct Automate *structs, bool commands[8][18], int h) {
+    for (int i = 0; i < h; i++) {
+        if (!update_state(structs + i, commands[i])) {
+            bool success = false;
+            switch ((structs + i)->state) {
+                case STATE_2: //2
+                    success = resolve_ex(structs, h, STATE_4, commands);
+                    break;
 
-| bool synchro(struct Automate\* structs, bool commands[8][18], int h) {for (int i = 0; i \&lt; h; i++) {if (!update\_state(structs + i, commands[i])) {bool success = false;switch ((structs + i)-\&gt;state) {case STATE\_2:success = resolve\_ex(structs, h, STATE\_3, commands);break;
-case STATE\_3:success = resolve\_ex(structs, h, STATE\_13, commands);break;
-case STATE\_5:success = resolve\_ex(structs, h, STATE\_8, commands);break;
-case STATE\_6:success = resolve\_ex(structs, h, STATE\_11,commands);break;
-case STATE\_7:success = resolve\_ex(structs, h, STATE\_1, commands);break;
-}if (!success) {set\_err(structs, h);return false;}break;
-}}return true;
-} |
-| --- |
+                case STATE_3:
+                    ALL_GOOD = 3222;
+                    success = resolve_ex(structs, h, STATE_14, commands);
+                    break;
 
+                case STATE_5:
+                    success = resolve_ex(structs, h, STATE_9, commands);
+                    break;
+
+                case STATE_6:
+                    success = resolve_ex(structs, h, STATE_12, commands);
+                    break;
+
+                case STATE_7:
+                    success = resolve_ex(structs, h, STATE_2, commands);
+                    break;
+
+            }
+
+            if (!success) {
+                set_err(structs, h);
+                return false;
+            }
+            break;
+
+        }
+    }
+    return true;
+
+}
+```
 В функции update\_state (листинг 3.3) отражена зависимость последующего состояния автомата от текущего (состояния).
 
 Листинг 3.3 – Связь между состояниями
+```
+bool update\_state(struct Automate *engine, bool *commands) {
+    switch (engine->state) {
 
-| bool update\_state(struct Automate \*engine, bool \*commands) {switch (engine-\&gt;state) {
-case STATE\_0://return control\_chang\_st(engine, STATE\_0, commands[0]);return send\_com(engine, STATE\_0, commands[0]);
-case STATE\_1:return send\_com(engine, STATE\_1, commands[1]);...case STATE\_15:return send\_com(engine, STATE\_15, commands[15]);
-case STATE\_16:return send\_com(engine, STATE\_16, commands[16]);
-case STATE\_17:return send\_com(engine, STATE\_17, commands[17]);
-case STATE\_18:return send\_com(engine, STATE\_18, commands[0]);}return false;} |
-| --- |
+        case STATE_0:
+            //return control_chang_st(engine, STATE_0, commands[0]);
+            return send_com(engine, STATE_0, commands[0]);
 
+        case STATE_1:
+            return send_com(engine, STATE_1, commands[1]);
+
+        case STATE_2:
+            return send_com(engine, STATE_2, commands[2]);
+
+        case STATE_3:
+            return send_com(engine, STATE_3, commands[3]);
+
+        case STATE_4:
+            return send_com(engine, STATE_4, commands[4]);
+
+        case STATE_5:
+            return send_com(engine, STATE_5, commands[5]);
+
+        case STATE_6:
+            return send_com(engine, STATE_6, commands[6]);
+
+        case STATE_7:
+            return send_com(engine, STATE_7, commands[7]);
+
+        case STATE_8:
+            return send_com(engine, STATE_8, commands[8]);
+
+        case STATE_9:
+            return send_com(engine, STATE_9, commands[9]);
+
+        case STATE_10:
+            return send_com(engine, STATE_10, commands[10]);
+
+        case STATE_11:
+            return send_com(engine, STATE_11, commands[11]);
+
+        case STATE_12:
+            return send_com(engine, STATE_12, commands[12]);
+
+        case STATE_13:
+            return send_com(engine, STATE_13, commands[13]);
+
+        case STATE_14:
+            return send_com(engine, STATE_14, commands[14]);
+
+        case STATE_15:
+            return send_com(engine, STATE_15, commands[15]);
+
+        case STATE_16:
+            return send_com(engine, STATE_16, commands[16]);
+
+        case STATE_17:
+            return send_com(engine, STATE_17, commands[17]);
+
+        case STATE_18:
+            return send_com(engine, STATE_18, commands[0]);
+
+    }
+    return false;
+}
+```
 Функция send\_com фактически осуществляет задержку цилиндра в заданном положении (листинг 3.4).
 
 Листинг 3.4 – Функция задержки
-
-| bool send\_com(struct Automate \*engine, int state, bool com) {if (engine-\&gt;can\_change) {return control\_chang\_st(engine, state, com);} else if (A\_TIME \&gt;= G\_D[state]) { //engine-\&gt;can\_change = true;engine-\&gt;ticks = time(NULL);return control\_chang\_st(engine, state, com);}return true;} |
-| --- |
-
+```
+bool send_com(struct Automate *engine, int state, bool com) {
+    if (engine->can_change) {
+        return control_chang_st(engine, state, com);
+    } else if (A_TIME >= G_D[state]) { //
+        engine->can_change = true;
+        engine->ticks = time(NULL);
+        return control_chang_st(engine, state, com);
+    }
+    return true;
+}
+```
 Функция control\_chang\_st управляет подачей выходного сигнала и сменной состояний (листинг 3.5).
 
 Листинг 3.5 – Функция управления
+```
+bool control_chang_st(struct Automate *engine, enum States start_state, bool com) {
+    int next_state = engine->state + 1;
+    if (engine->state == STATE_18) next_state = STATE_1;
+    if (engine->state == start_state && A_TIME > G_T[next_state]) // ????
+        return false;
 
-| bool control\_chang\_st(struct Automate \*engine, enum States start\_state, bool com) {int next\_state = engine-\&gt;state + 1;if (engine-\&gt;state == STATE\_18) next\_state = STATE\_1;if (engine-\&gt;state == start\_state &amp;&amp; A\_TIME \&gt; G\_T[next\_state]) // ????return false;
-if ((engine-\&gt;at\_top \* com || engine-\&gt;at\_bottom \* !com)) {engine-\&gt;ticks = time(NULL);engine-\&gt;state = next\_state;ALL\_GOOD = next\_state;engine-\&gt;can\_change = false;return true;}
-if (engine-\&gt;at\_bottom || engine-\&gt;at\_top) {engine-\&gt;output = com;engine-\&gt;ticks = time(NULL);return true;} else {engine-\&gt;output = com;}return true;} |
-| --- |
 
+    if ((engine->at_top * com || engine->at_bottom * !com)) {
+        engine->ticks = time(NULL);
+        engine->state = next_state;
+        //ALL_GOOD = next_state;
+        engine->can_change = false;
+        return true;
+    }
+
+    if (engine->at_bottom || engine->at_top) {
+        engine->output = com;
+        engine->ticks = time(NULL);
+        return true;
+    } else {
+        engine->output = com;
+    }
+    return true;
+}
+```
 Также присутствует функция, обрабатывающая исключительные ситуации (листинг 3.6). Она выполняется если по каким-либо причинам один или несколько пневмоцилиндров не успели сменить состояние.
 
 Листинг 3.6 – Функция обработки исключения
+```
+bool resolve_ex(struct Automate *structs, const int size, const int start_st, bool commands[8][18]) {
+    bool ext = true;
+    for (int i = 0; i < size; i++) {
+        (structs + i)->state = start_st;
+        (structs + i)->ticks = time(NULL);
+        (structs + i)->can_change = true;
+    }
+    for (int i = 0; i < size; i++) {
+        ext = update_state((structs + i), commands[i]);
+        if (!ext) return false;
+    }
 
-| bool resolve\_ex(struct Automate \*structs, const int size, const int start\_st, bool commands[8][18]) {bool ext = true;for (int i = 0; i \&lt; size; i++) {(structs + i)-\&gt;state = start\_st;(structs + i)-\&gt;ticks = time(NULL);(structs + i)-\&gt;can\_change = true;}for (int i = 0; i \&lt; size; i++) {ext = update\_state((structs + i), commands[i]);if (!ext) return false;}
-return true;} |
-| --- |
+    return true;
+}
+```
+В функции set\_switch\_times производится инициализация массивов, хранящих временные промежутки (листинг 3.7). Обычно глобальные переменные нежелательны в коде так как небезопастны. Однако их можно использовать в случаях, когда мы точно знаем, что разрабатываемая программа не будет слижком сложной по своей струтуре и глобальные переменные не окажут сильнного влияния на написание кода. В данном случае использование глобальных переменных обусловлено их большей наглядностью для данной задачи по сравнению с макросами. 
 
-# В функции set\_switch\_times производится инициализация массивов, хранящих временные промежутки (листинг 3.7).
+Листинг 3.7 – Инициализация массива с временными отрезками
+```
+bool set_switch_times(int a) {
+    if (!a) return 0;
+    const int d = 1;
+    G_T[0] = -1;
+    G_D[0] = -1;
+    G_T[4 + d] = G_T[15 + d] = G_T[16 + d] = 120;
+    G_T[1 + d] = G_T[2 + d] = G_T[3 + d] = G_T[5 + d] = G_T[11 + d] = G_T[14 + d] = 56;
+    G_T[18] = G_T[0 + d] = G_T[8 + d] = G_T[9 + d] = 60;
+    G_T[7 + d] = G_T[10 + d] = G_T[12 + d] = G_T[13 + d] = 45;
+    G_T[6 + d] = 30;
 
-Листинг 3.6 – Инициализация массива с временными отрезками
-
-| bool set\_switch\_times(int a) {if (!a) return 0;const int d = 1;G\_T[0] = -1;G\_D[0] = -1;G\_T[4 + d] = G\_T[15 + d] = G\_T[16 + d] = 120;G\_T[1 + d] = G\_T[2 + d] = G\_T[3 + d] = G\_T[5 + d] = G\_T[11 + d] = G\_T[14 + d] = 56;G\_T[18] = G\_T[0 + d] = G\_T[8 + d] = G\_T[9 + d] = 60;G\_T[7 + d] = G\_T[10 + d] = G\_T[12 + d] = G\_T[13 + d] = 45;G\_T[6 + d] = 30;
-G\_D[2 + d] = G\_D[3 + d] = 33;G\_D[5 + d] = G\_D[10 + d] = G\_D[11 + d] = G\_D[15 + d] = 70;G\_D[4 + d] = G\_D[8 + d] = G\_D[9 + d] = G\_D[13 + d] = G\_D[14 + d] = G\_D[16 + d] = 60;G\_D[6 + d] = G\_D[7 + d] = 45;G\_D[18] = G\_D[0 + d] = G\_D[1 + d] = G\_D[12 + d] = 78;// G\_T[2] = 1;// G\_T[4] = 2;return true;} |
-| --- |
-
+    G_D[2 + d] = G_D[3 + d] = 33;
+    G_D[5 + d] = G_D[10 + d] = G_D[11 + d] = G_D[15 + d] = 70;
+    G_D[4 + d] = G_D[8 + d] = G_D[9 + d] = G_D[13 + d] = G_D[14 + d] = G_D[16 + d] = 60;
+    G_D[6 + d] = G_D[7 + d] = 45;
+    G_D[18] = G_D[0 + d] = G_D[1 + d] = G_D[12 + d] = 78;
+    //G_T[2] = 1;
+    //G_T[4] = 2;
+    return true;
+}
+```
 # 4. Тестирование автомата в среде SimInTech
 
 Соберем схему для генерации кода (Рис. 4.1).
