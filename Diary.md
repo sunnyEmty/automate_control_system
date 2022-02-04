@@ -407,20 +407,218 @@ bool set_switch_times(int a) {
 
 </p>
 
-В заголовке модуля объявляется массив структур engine, элементы которого соответствуют своим пневмоцилиндрам (Рис 4.2). Здесь также инициализируется двумерный массив com, в котором построчно заносятся команды для каждого пневмоцилиндра. Свяжем входы и выходы блока с соответствующими им полями структур в основной секции кода (Рис. 4.3).
-<p align="center">
+В заголовке модуля объявляется массив структур engine, элементы которого соответствуют своим пневмоцилиндрам (Листинг 3.8). Здесь также инициализируется двумерный массив com, в котором построчно заносятся команды для каждого пневмоцилиндра. Свяжем входы и выходы блока с соответствующими им полями структур в основной секции кода (Листинг 3.9).
 
-  <img src="https://user-images.githubusercontent.com/95709737/152457831-23d34dbb-504d-4881-b7e9-f75379f90abe.png">
-  <div align="center">
-    Рис. 4.2. Заголовок модуля
-  </div>
+Листинг 3.8 – Заголовок модуля
+```
+#include "autoamates.h"
+#include "autoamates.c"
+ struct Automate engine[8];
+ 
+ bool com[8][18] = {
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN
+            },
 
-</p>
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+            },
 
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+            },
+            //4
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
 
-![](RackMultipart20220203-4-1xj1on9_html_254e468064723aa6.png)
+            },
+            //5
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+            },
+            //6
+            {
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_UP,
+               MOVE_UP,
+               MOVE_DOWN,
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_DOWN,
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_UP,
+               MOVE_DOWN,
+               MOVE_UP,
+               MOVE_DOWN,
+            },
+            //7
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+            },
+            //8
+            {
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
+                MOVE_DOWN,
+                MOVE_UP,
+                MOVE_UP,
+                MOVE_DOWN,
 
-Рис. 4.3. Окно основной секции кода
+            }
+
+    };
+```
+
+Листинг 3.9 – Основная секция кода
+```
+engine[0].at_bottom = (bool) %input:0%;
+engine[0].at_top = (bool) %input:1%;
+engine[1].at_bottom = (bool) %input:2%;
+engine[1].at_top = (bool) %input:3%;
+engine[2].at_bottom = (bool) %input:4%;
+engine[2].at_top = (bool) %input:5%;
+engine[3].at_bottom = (bool) %input:6%;
+engine[3].at_top = (bool) %input:7%;
+engine[4].at_bottom = (bool) %input:8%;
+engine[4].at_top = (bool) %input:9%;
+engine[5].at_bottom = (bool) %input:10%;
+engine[5].at_top = (bool) %input:11%;
+engine[6].at_bottom = (bool) %input:12%;
+engine[6].at_top = (bool) %input:13%;
+engine[7].at_bottom = (bool) %input:14%;
+engine[7].at_top = (bool) %input:15%;
+
+synchro(engine, com, 8);
+%out:0% = engine[0].output;
+%out:1% = engine[1].output;
+%out:2% = engine[2].output;
+%out:3% = engine[3].output;
+%out:4% = engine[4].output;
+%out:5% = engine[5].output;
+%out:6% = engine[6].output;
+%out:7% = engine[7].output;
+%out:8% = ALL_GOOD;
+```
 
 Инициализация массива engine выполняется в блоке «Значения переменных по умолчанию». Также здесь выполняется инициализация массивов временных промежутков (Рис. 4.4).
 
