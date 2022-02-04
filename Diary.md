@@ -373,8 +373,7 @@ bool resolve_ex(struct Automate *structs, const int size, const int start_st, bo
 
 Листинг 3.7 – Инициализация массива с временными отрезками
 ```
-bool set_switch_times(int a) {
-    if (!a) return 0;
+bool set_switch_times() {
     const int d = 1;
     G_T[0] = -1;
     G_D[0] = -1;
@@ -625,7 +624,7 @@ synchro(engine, com, 8);
 Листинг 4.3. блок «Значения переменных по умолчанию»
 ```
 init(engine, 8);
-set_switch_times(10);
+set_switch_times();
 ```
 
 Соберем схему для тестирования автомата (Рис. 4.3). Настроим блок DLL (Рис. 4.4).
